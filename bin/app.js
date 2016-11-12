@@ -39,70 +39,76 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Helper
-var helper = {};
-fs.readdirSync(path.join(__dirname, "../helper")).forEach(function (file) {
-  var hlp;
-  if (file.substr(-3) == ".js") {
-    hlp = require("../helper/" + file);
-    if (typeof hlp == "function") {
-      hlp(hbs);
+if (fs.existsSync(path.join(__dirname, "../helper"))) {
+  var helper = {};
+  fs.readdirSync(path.join(__dirname, "../helper")).forEach(function (file) {
+    var hlp;
+    if (file.substr(-3) == ".js") {
+      hlp = require("../helper/" + file);
+      if (typeof hlp == "function") {
+        hlp(hbs);
+      }
     }
-  }
-});
+  });
+}
 
 // Middleware
-fs.readdirSync(path.join(__dirname, "../middleware")).forEach(function (file1) {
-  var route1;
-  if (file1.substr(-3) == ".js") {
-    route1 = require("../middleware/" + path.basename(file1, '.js'));
-    app.use(route1.path, route1.router);
-  }
-  if (path.extname(file1) == "") {
-    fs.readdirSync(path.join(__dirname, "../middleware/" + file1)).forEach(function (file2) {
-      var route2;
-      if (file2.substr(-3) == ".js") {
-        route2 = require("../middleware/" + file1 + "/" + path.basename(file2, '.js'));
-        app.use(route2.path, route2.router);
-      }
-      if (path.extname(file2) == "") {
-        fs.readdirSync(path.join(__dirname, "../middleware/" + file1 + "/" + file2)).forEach(function (file3) {
-          var route3;
-          if (file3.substr(-3) == ".js") {
-            route3 = require("../middleware/" + file1 + "/" + file2 + "/" + path.basename(file3, '.js'));
-            app.use(route3.path, route3.router);
-          }
-        })
-      }
-    })
-  }
-});
+if (fs.existsSync(path.join(__dirname, "../middleware"))) {
+  fs.readdirSync(path.join(__dirname, "../middleware")).forEach(function (file1) {
+    var route1;
+    if (file1.substr(-3) == ".js") {
+      route1 = require("../middleware/" + path.basename(file1, '.js'));
+      app.use(route1.path, route1.router);
+    }
+    if (path.extname(file1) == "") {
+      fs.readdirSync(path.join(__dirname, "../middleware/" + file1)).forEach(function (file2) {
+        var route2;
+        if (file2.substr(-3) == ".js") {
+          route2 = require("../middleware/" + file1 + "/" + path.basename(file2, '.js'));
+          app.use(route2.path, route2.router);
+        }
+        if (path.extname(file2) == "") {
+          fs.readdirSync(path.join(__dirname, "../middleware/" + file1 + "/" + file2)).forEach(function (file3) {
+            var route3;
+            if (file3.substr(-3) == ".js") {
+              route3 = require("../middleware/" + file1 + "/" + file2 + "/" + path.basename(file3, '.js'));
+              app.use(route3.path, route3.router);
+            }
+          })
+        }
+      })
+    }
+  });
+}
 
 // Controller
-fs.readdirSync(path.join(__dirname, "../controllers")).forEach(function (file1) {
-  var route1;
-  if (file1.substr(-3) == ".js") {
-    route1 = require("../controllers/" + path.basename(file1, '.js'));
-    app.use(route1.path, route1.router);
-  }
-  if (path.extname(file1) == "") {
-    fs.readdirSync(path.join(__dirname, "../controllers/" + file1)).forEach(function (file2) {
-      var route2;
-      if (file2.substr(-3) == ".js") {
-        route2 = require("../controllers/" + file1 + "/" + path.basename(file2, '.js'));
-        app.use(route2.path, route2.router);
-      }
-      if (path.extname(file2) == "") {
-        fs.readdirSync(path.join(__dirname, "../controllers/" + file1 + "/" + file2)).forEach(function (file3) {
-          var route3;
-          if (file3.substr(-3) == ".js") {
-            route3 = require("../controllers/" + file1 + "/" + file2 + "/" + path.basename(file3, '.js'));
-            app.use(route3.path, route3.router);
-          }
-        })
-      }
-    })
-  }
-});
+if (fs.existsSync(path.join(__dirname, "../controllers"))) {
+  fs.readdirSync(path.join(__dirname, "../controllers")).forEach(function (file1) {
+    var route1;
+    if (file1.substr(-3) == ".js") {
+      route1 = require("../controllers/" + path.basename(file1, '.js'));
+      app.use(route1.path, route1.router);
+    }
+    if (path.extname(file1) == "") {
+      fs.readdirSync(path.join(__dirname, "../controllers/" + file1)).forEach(function (file2) {
+        var route2;
+        if (file2.substr(-3) == ".js") {
+          route2 = require("../controllers/" + file1 + "/" + path.basename(file2, '.js'));
+          app.use(route2.path, route2.router);
+        }
+        if (path.extname(file2) == "") {
+          fs.readdirSync(path.join(__dirname, "../controllers/" + file1 + "/" + file2)).forEach(function (file3) {
+            var route3;
+            if (file3.substr(-3) == ".js") {
+              route3 = require("../controllers/" + file1 + "/" + file2 + "/" + path.basename(file3, '.js'));
+              app.use(route3.path, route3.router);
+            }
+          })
+        }
+      })
+    }
+  });
+}
 
 // Error Handler 404
 app.use(function (req, res, next) {
