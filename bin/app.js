@@ -1,5 +1,10 @@
-// Modules
+// Load Setting
+var configApp = require('../config/app');
+
+// Load Modules
 var express = require('express');
+var debug = require('debug')(`${configApp.name}:server`);
+var http = require('http');
 var path = require('path');
 var fs = require('fs');
 var favicon = require('serve-favicon');
@@ -38,77 +43,25 @@ app.use(cookieParser());
 // Setup Public Folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Helper
-if (fs.existsSync(path.join(__dirname, "../helper"))) {
-  var helper = {};
-  fs.readdirSync(path.join(__dirname, "../helper")).forEach(function (file) {
-    var hlp;
-    if (file.substr(-3) == ".js") {
-      hlp = require("../helper/" + file);
-      if (typeof hlp == "function") {
-        hlp(hbs);
-      }
-    }
-  });
+// Create Modules Loader
+var module = {
+  app: app,
+  path: path,
+  fs: fs,
+  hbs: hbs
 }
+
+// Helper
+var helper = require('./helper');
+helper.init(module);
 
 // Middleware
-if (fs.existsSync(path.join(__dirname, "../middleware"))) {
-  fs.readdirSync(path.join(__dirname, "../middleware")).forEach(function (file1) {
-    var route1;
-    if (file1.substr(-3) == ".js") {
-      route1 = require("../middleware/" + path.basename(file1, '.js'));
-      app.use(route1.path, route1.router);
-    }
-    if (path.extname(file1) == "") {
-      fs.readdirSync(path.join(__dirname, "../middleware/" + file1)).forEach(function (file2) {
-        var route2;
-        if (file2.substr(-3) == ".js") {
-          route2 = require("../middleware/" + file1 + "/" + path.basename(file2, '.js'));
-          app.use(route2.path, route2.router);
-        }
-        if (path.extname(file2) == "") {
-          fs.readdirSync(path.join(__dirname, "../middleware/" + file1 + "/" + file2)).forEach(function (file3) {
-            var route3;
-            if (file3.substr(-3) == ".js") {
-              route3 = require("../middleware/" + file1 + "/" + file2 + "/" + path.basename(file3, '.js'));
-              app.use(route3.path, route3.router);
-            }
-          })
-        }
-      })
-    }
-  });
-}
+var middleware = require('./middleware');
+middleware.init(module);
 
 // Controller
-if (fs.existsSync(path.join(__dirname, "../controllers"))) {
-  fs.readdirSync(path.join(__dirname, "../controllers")).forEach(function (file1) {
-    var route1;
-    if (file1.substr(-3) == ".js") {
-      route1 = require("../controllers/" + path.basename(file1, '.js'));
-      app.use(route1.path, route1.router);
-    }
-    if (path.extname(file1) == "") {
-      fs.readdirSync(path.join(__dirname, "../controllers/" + file1)).forEach(function (file2) {
-        var route2;
-        if (file2.substr(-3) == ".js") {
-          route2 = require("../controllers/" + file1 + "/" + path.basename(file2, '.js'));
-          app.use(route2.path, route2.router);
-        }
-        if (path.extname(file2) == "") {
-          fs.readdirSync(path.join(__dirname, "../controllers/" + file1 + "/" + file2)).forEach(function (file3) {
-            var route3;
-            if (file3.substr(-3) == ".js") {
-              route3 = require("../controllers/" + file1 + "/" + file2 + "/" + path.basename(file3, '.js'));
-              app.use(route3.path, route3.router);
-            }
-          })
-        }
-      })
-    }
-  });
-}
+var controller = require('./controller');
+controller.init(module);
 
 // Error Handler 404
 app.use(function (req, res, next) {
@@ -137,5 +90,49 @@ app.use(function (err, req, res, next) {
   });
 });
 
-// Exports
-module.exports = app;
+// Set Port
+app.set('port', configApp.port);
+
+// Create HTTP Server
+var server = http.createServer(app);
+
+// Listen on Provided Port
+server.listen(configApp.port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+// Event listener for HTTP server "Error"
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string' ?
+    'Pipe ' + port :
+    'Port ' + port;
+
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+// Event Listener for HTTP Server "Listening"
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string' ?
+    'pipe ' + addr :
+    'port ' + addr.port;
+  debug('Listening on ' + bind);
+  console.log(`Aplication : ${configApp.fullname}`);
+  console.log(`Versi : ${configApp.versi}`);
+  console.log(`Listening on : localhost:${configApp.port}`);
+}
