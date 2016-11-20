@@ -8,20 +8,30 @@
 
 3. Fork "Alfacode-Framework"
 
-    `$ git clone https://github.com/alfacode-me/Alfacode-Framework`
+    `
+    $ git clone https://github.com/alfacode-me/Alfacode-Framework
+    `
     
 4. Install Module "Nodemon" (Auto reRun App)
 
-    `$ npm install -g nodemon`
+    `
+    $ npm install -g nodemon
+    `
 
 5. Install Modules
 
-    `$ npm install`
+    `
+    $ npm install
+    `
    
 6. Run App
 
-    `$ npm start`
+    `
+    $ npm start
+    `
     
 7. Open Browser
 
-    `http://127.0.0.1:2323`
+    `
+    http://127.0.0.1:2323
+    `
