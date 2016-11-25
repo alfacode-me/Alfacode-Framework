@@ -12,11 +12,15 @@
     "debug": "~2.2.0",
     "express": "~4.13.4",
     "express-hbs": "^1.0.3",
+    "jquery": "^3.1.1",
     "moment": "^2.15.2",
+    "moment-timezone": "^0.5.9",
     "morgan": "~1.7.0",
-    "nedb": "^1.8.0",
     "node-cron": "^1.1.2",
+    "sequelize": "^3.27.0",
     "serve-favicon": "~2.3.0",
-    "socket.io": "^1.5.1"
+    "socket.io": "^1.5.1",
+    "sqlite3": "^3.1.8",
+    "vue": "^2.0.7"
   }
 }

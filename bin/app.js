@@ -24,6 +24,7 @@ app.engine("hbs", hbs.express4({
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "../views"));
 app.use('/src', express.static('public'));
+app.use('/module', express.static('node_modules'));
 
 // Favicon
 app.use(favicon(path.join(__dirname, '../public', 'favicon/favicon.png')));
@@ -67,7 +68,9 @@ controller.init(module);
 app.use(function (req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
-  next(err);
+  res.render('error/404', {
+    error: err
+  });
 });
 
 // Development Error Handler
@@ -84,7 +87,7 @@ if (app.get('env') === 'development') {
 // Production Error Handler
 app.use(function (err, req, res, next) {
   res.status(err.status || 500);
-  res.render('error', {
+  res.render('error/500', {
     message: err.message,
     error: {}
   });
